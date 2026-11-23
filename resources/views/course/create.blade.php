@@ -1,23 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Course</title>
-</head>
-<body>
+<x-layouts.app title="Create Course">
+    <h1>Create Course</h1>
 
-<h1>Create Course</h1>
+    <form action="{{ route('courses.store') }}" method="POST">
+        @csrf
 
-@include('partials.errors')
+        @include('course._form')
 
-<form action="/courses" method="POST">
-    @csrf
-    @include('course._fields')
-    <button type="submit">Create Course</button>
-</form>
-
-<br>
-
-<a href="/courses">Back to Courses</a>
-
-</body>
-</html>
+        <button type="submit" class="btn">Create Course</button>
+        <a href="{{ route('courses.index') }}">Cancel</a>
+    </form>
+</x-layouts.app>

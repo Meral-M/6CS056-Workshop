@@ -33,8 +33,8 @@ class CrudTest extends TestCase
         $this->post('/students', $this->student())->assertRedirect('/students');
         $s = Student::firstOrFail();
 
-        $this->get('/students')->assertOk()->assertSee('Asha Rai')->assertSee('Student Asha Rai created');
-        $this->get("/students/{$s->id}")->assertOk()->assertSee('2000-01-31');
+        $this->get('/students')->assertOk()->assertSee('Asha Rai')->assertSee('Student Asha Rai created')->assertSee('Training Institute Management System')->assertSee('Courses');
+        $this->get("/students/{$s->id}")->assertOk()->assertSee('31 Jan 2000')->assertSee('Age:');
         $this->get("/students/{$s->id}/edit")->assertOk()->assertSee('value="2000-01-31"', false);
 
         // update keeping own email must pass uniqueness
@@ -44,6 +44,14 @@ class CrudTest extends TestCase
 
         $this->delete("/students/{$s->id}")->assertRedirect('/students');
         $this->assertDatabaseCount('students', 0);
+    }
+
+    public function test_resource_routes_and_missing_record(): void
+    {
+        $this->get('/')->assertOk();
+        $this->assertCount(14, collect(app('router')->getRoutes())->filter(fn ($r) => str_starts_with((string) $r->getName(), 'students.') || str_starts_with((string) $r->getName(), 'courses.')));
+        $this->get('/students/9999')->assertNotFound();
+        $this->get('/courses/9999')->assertNotFound();
     }
 
     public function test_student_validation(): void
@@ -68,7 +76,7 @@ class CrudTest extends TestCase
         $this->get("/courses/{$c->id}/edit")->assertOk();
 
         // unchecked checkbox => inactive
-        $this->put("/courses/{$c->id}", $this->course(['is_active' => null, 'difficulty' => 'Hard']))
+        $this->put("/courses/{$c->id}", $this->course(['is_active' => '0', 'difficulty' => 'Hard']))
             ->assertRedirect("/courses/{$c->id}");
         $c->refresh();
         $this->assertFalse($c->is_active);
