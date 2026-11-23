@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Course</title>
+</head>
+<body>
+
+<h1>Edit Course</h1>
+
+@include('partials.errors')
+
+<form action="/courses/{{ $course->id }}" method="POST">
+    @csrf
+    @method('PUT')
+    @include('course._fields')
+    <button type="submit">Update Course</button>
+</form>
+
+<br>
+
+<a href="/courses">Back to Courses</a>
+
+</body>
+</html>
